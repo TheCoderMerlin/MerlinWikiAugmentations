@@ -1,5 +1,5 @@
-const stg = window.location.hostname == 'www.codermerlin.com' ? null : 'stg';
-const baseUrl = `https://api-server${stg ? '-' + stg : null}.codermerlin.com`;
+const stg = window.location.hostname == 'www.codermerlin.com' ? '' : 'stg';
+const baseUrl = `https://api-server${stg ? '-' + stg : ''}.codermerlin.com`;
 
 /**
  * Get the data from the API and process the results
