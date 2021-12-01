@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import getJson from '../http';
 import {baseUrl} from './data';
 
 /**
@@ -8,19 +9,15 @@ import {baseUrl} from './data';
  * @param {string} missionId The mission's identifier
  * @returns {undefined}
  */
-function setMissionHref($mission, missionId) {
+async function setMissionHref($mission, missionId) {
     // Make the API request to get the URL
     let baseUrl = 'https://www.codermerlin.com';
     let path = `/wiki/api.php?action=ask&query=[[Merlin%20mission::${missionId}]]&format=json&api_version=3`;
 
-    console.log(baseUrl + path);
-
-    $.getJSON(baseUrl + path).then(function (data) {
+    getJson(baseUrl + path).then(function (data) {
         // Extract the query from the data
         let query = data['query'];
         let results = query['results'];
-
-        console.log(results);
 
         // Only add the link if the results array isn't empty
         if (results.length > 0) {
@@ -35,6 +32,16 @@ function setMissionHref($mission, missionId) {
             $mission.html(`<span class="text-danger">${$mission.text()}</span>`);
         }
     });
+}
+
+/**
+ * Build the complete name for a mission
+ * 
+ * @param {Object} mission The mission to generate the name for
+ * @return {string} The mission name
+ */
+function buildMissionName(mission) {
+    return `M${mission['sequence']}-${mission['suffix']}: ${mission['name']}`;
 }
 
 /**
@@ -54,19 +61,33 @@ async function handleTopicPress(event) {
     // Make the API request
     let path = `/mission-manager/mastery-programs/${programId}/topics/${topicId}/missions`;
 
-    let missions = (await $.getJSON(baseUrl + path));
+    // Fetch the missions
+    let missions = (await getJson(baseUrl + path))['rows'];
+
+    // Sort by name
+    missions.sort(function (left, right) {
+        // Build the names
+        const leftMissionName = buildMissionName(left);
+        const rightMissionName = buildMissionName(right);
+
+        if (leftMissionName < rightMissionName) {
+            return -1;
+        } else if (leftMissionName > rightMissionName) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
 
     // Create an unordered list
     let $ul = $('<ul style="display: none;"></ul>');
 
     // Iterate over the missions rows
-    for (let i = 0; i < missions['rows'].length; i++) {
-        let mission = missions['rows'][i];
-
-        let missionName = `M${mission['sequence']}-${mission['suffix']}: ${mission['name']}`;
+    for (let i = 0; i < missions.length; i++) {
+        let mission = missions[i];
 
         // Add to the list
-        let $li = $(`<li>${missionName}</li>`);
+        let $li = $(`<li>${buildMissionName(mission)}</li>`);
 
         // Set the href
         setMissionHref($li, `M${mission['sequence']}-${mission['suffix']}`);
@@ -90,13 +111,7 @@ async function handleTopicPress(event) {
  */
 function addTopicHandlers($table, className) {
     // Iterate over each of the topic names
-    $table.find('.' + className).each(function () {
-        // Convert into a jQuery object
-        let $this = $(this);
-
-        // Add the handler
-        $this.click(handleTopicPress);
-    });
+    $table.find('.' + className).click(handleTopicPress);
 }
 
 export default addTopicHandlers;
