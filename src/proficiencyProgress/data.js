@@ -32,7 +32,7 @@ async function callApi(username, sessionId) {
  * @param  {string} sessionId
  * @return {Promise} An array containing the topics and stages
  */
-async function getData(username, sessionId) {    
+async function getData(username, sessionId) {
     let rawData = await callApi(username, sessionId);
     
     // Re-order everything by the sequence

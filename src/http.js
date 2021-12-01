@@ -28,7 +28,12 @@ function getJson(url, params = {}, headers = {})
         console.log('No match found for', url);
     }
 
-    return $.getJSON(url, params, headers);
+    return $.ajax({
+        dataType: 'json',
+        url: url,
+        data: params,
+        headers: headers
+    });
 }
 
 export default getJson;
