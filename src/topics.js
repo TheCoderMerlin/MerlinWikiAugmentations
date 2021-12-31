@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import {getJson, wikiBaseUrl} from './http';
+import {getJson, wikiBaseUrl, apiBaseUrl} from './http';
 
 const baseUrl = wikiBaseUrl;
 
@@ -62,7 +62,7 @@ async function handleTopicPress(event) {
     let path = `/mission-manager/mastery-programs/${programId}/topics/${topicId}/missions`;
 
     // Fetch the missions
-    let missions = (await getJson(baseUrl + path))['rows'];
+    let missions = (await getJson(apiBaseUrl + path))['rows'];
 
     // Sort by name
     missions.sort(function (left, right) {
