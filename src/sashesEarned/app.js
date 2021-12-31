@@ -15,7 +15,7 @@ import moment from 'moment';
 async function sashesEarned(username, sessionId)
 {
     // Make the API call
-    let data = await getJson(`${apiBaseUrl}/mission-manager/users/john-williams/sash-awards/programs`, [], {
+    let data = await getJson(`${apiBaseUrl}/mission-manager/users/${username}/sash-awards/programs`, [], {
         username: username,
         sessionId: sessionId
     });
