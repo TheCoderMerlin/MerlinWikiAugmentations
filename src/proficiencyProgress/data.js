@@ -88,6 +88,12 @@ async function getData(username, sessionId) {
                 pct: pct
             });
         }
+
+        // If the second element is complete, mark the first one as such
+        if (dataRow['data'][1].date == 'Passed') {
+            dataRow['data'][0].date = 'Passed';
+            dataRow['data'][0].pct = '100%';
+        }
         
         data.push(dataRow);
     }

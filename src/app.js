@@ -14,6 +14,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import merlinProficiencyProgress from "./proficiencyProgress/app";
+import sashesEarned from './sashesEarned/app';
 
 // Exports
 window.merlinProficiencyProgress = merlinProficiencyProgress;
+window.sashesEarned = sashesEarned;

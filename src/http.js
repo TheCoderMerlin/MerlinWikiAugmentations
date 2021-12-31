@@ -1,13 +1,24 @@
 import $ from 'jquery';
-import dummy from './dummy';
+let dummy = {};
+try {
+    dummy = require('./dummy');
+    dummy = dummy.default;
+} catch (e) {
+    // Ignore
+}
+
+// URL helpers
+const stgPrefix = window.location.hostname == 'www.codermerlin.com' ? '' : 'stg';
+const apiBaseUrl = `https://api-server${stgPrefix ? '-' + stgPrefix : ''}.codermerlin.com`;
+const wikiBaseUrl = `https://${stgPrefix ? stgPrefix : 'www'}.codermerlin.com`;
 
 /**
  * Fetch JSON
  * 
  * @param  {string} url The URL to request
- * @param  {Object} params Any parameters to pass to AJAX
- * @param  {Object} headers Any headers to add
- * @return {Promise<Object>}
+ * @param  {object} params Any parameters to pass to AJAX
+ * @param  {object} headers Any headers to add
+ * @return {Promise<object>}
  */
 function getJson(url, params = {}, headers = {})
 {
@@ -26,6 +37,7 @@ function getJson(url, params = {}, headers = {})
         }
 
         console.log('No match found for', url);
+        return;
     }
 
     return $.ajax({
@@ -39,5 +51,8 @@ function getJson(url, params = {}, headers = {})
 export default getJson;
 
 export {
-    getJson
+    getJson,
+    stgPrefix,
+    apiBaseUrl,
+    wikiBaseUrl
 }

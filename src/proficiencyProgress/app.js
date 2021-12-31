@@ -1,7 +1,7 @@
-import Table from './table';
+import Table from '../table';
 import getData from './data';
 import $ from 'jquery';
-import addTopicHandlers from './topics';
+import addTopicHandlers from '../topics';
 
 /**
  * Build the proficiency progress table
@@ -28,7 +28,7 @@ function merlinProficiencyProgress(username, sessionId) {
                 header: true,
                 data: `<span class="topic-name text-primary" style="cursor: pointer;" data-topic-id="${topic['topic_id']}" data-program-id="${topic['program_id']}">${topic.topic}</span>`,
                 attributes: {
-                    style: `background-color: ${topic.data[0].date ? 'lightgreen' : 'lightgray'};`,
+                    style: `background-color: ${topic.data.slice(-1)[0].date ? 'lightgreen' : 'lightgray'};`,
                 }
             });
             

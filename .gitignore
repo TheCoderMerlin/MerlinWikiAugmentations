@@ -2,3 +2,4 @@ node_modules/
 index.js*
 mix-manifest.json
 .env
+src/dummy.js

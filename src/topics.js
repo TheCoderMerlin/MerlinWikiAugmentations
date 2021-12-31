@@ -1,6 +1,7 @@
 import $ from 'jquery';
-import getJson from '../http';
-import {baseUrl} from './data';
+import {getJson, wikiBaseUrl} from './http';
+
+const baseUrl = wikiBaseUrl;
 
 /**
  * Set the href for a mission
@@ -11,7 +12,6 @@ import {baseUrl} from './data';
  */
 async function setMissionHref($mission, missionId) {
     // Make the API request to get the URL
-    let baseUrl = 'https://www.codermerlin.com';
     let path = `/wiki/api.php?action=ask&query=[[Merlin%20mission::${missionId}]]&format=json&api_version=3`;
 
     getJson(baseUrl + path).then(function (data) {
