@@ -16,12 +16,42 @@ function merlinProficiencyProgress(username, sessionId) {
     
     // Fetch the data
     let $rows = [];
-    getData(username, sessionId).then(async function (data) {
+    getData(username, sessionId).then(async function ([levels, data]) {
+        let currentLevel = undefined;
+        let newLevel = undefined;
+
         // Iterate over each topic
         for (let i = 0; i < data.length; i++) {
             let topic = data[i];
-            
+
+            newLevel = topic['level_group'];
+
+            if (newLevel != currentLevel) {
+                // Add a level row
+                table.addRow([
+                    {
+                        header: true,
+                        data: newLevel,
+                        attributes: {
+                            colspan: 7,
+                            class: 'text-center',
+                            style: `background-color: ${newLevel.toLowerCase()}; border: none;`
+                        }
+                    }
+                ]);
+            }
+
+            currentLevel = newLevel;
+
             let cells = [];
+
+            // First, add a colored cell as per the level
+            cells.push({
+                data: '',
+                attributes: {
+                    style: `background-color: ${newLevel.toLowerCase()}; border: none;`,
+                }
+            });
                         
             // Set the first row to the title
             cells.push({

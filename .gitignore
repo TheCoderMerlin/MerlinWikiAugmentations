@@ -4,3 +4,4 @@ mix-manifest.json
 .env
 src/dummy.js
 .vscode
+.idea

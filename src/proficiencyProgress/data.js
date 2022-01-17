@@ -37,7 +37,7 @@ async function getData(username, sessionId) {
     
     // Re-order everything by the sequence
     const orderKey = 'masteryProgramTopicSequence';
-    
+
     rawData.rows.sort(function(a, b) {
         if (a[orderKey] > b[orderKey]) {
             return -1;
@@ -51,6 +51,12 @@ async function getData(username, sessionId) {
     let data = [];
     
     const stages = ['Inevident', 'Emerging', 'Developing', 'Proficient', 'Exemplary'];
+
+    // The level names (e.g. White, Yellow, etc.)
+    let levels = [];
+
+    // Keep track of the current color
+    let currentColor = '';
     
     for (let i = 0; i < rawData.rows.length; i++) {
         // Get the row
@@ -63,7 +69,12 @@ async function getData(username, sessionId) {
         dataRow['topic'] = row['masteryProgramTopicName'];
         dataRow['topic_id'] = row['masteryProgramTopicId'];
         dataRow['program_id'] = row['masteryProgramId'];
+        dataRow['level_name'] = row['masteryProgramLevelName'];
+        dataRow['level_group'] = dataRow['level_name'].split(' ')[0];
         dataRow['data'] = [];
+
+        // Add to the levels array
+        levels.push(dataRow['level_group']);
         
         // Iterate over the stages
         for (let j = 0; j < stages.length; j++) {
@@ -97,9 +108,11 @@ async function getData(username, sessionId) {
         
         data.push(dataRow);
     }
-    
-    
-    return data;
+
+    // Remove duplicates from levels
+    levels = [... new Set(levels)];
+
+    return [levels, data];
 }
 
 export default getData;
