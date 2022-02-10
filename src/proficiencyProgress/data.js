@@ -1,44 +1,41 @@
 import $ from 'jquery';
-import getJson from '../http';
+import {getJson, apiBaseUrl} from '../http';
 
-const stg = window.location.hostname == 'www.codermerlin.com' ? '' : 'stg';
-const baseUrl = `https://api-server${stg ? '-' + stg : ''}.codermerlin.com`;
-
-/**
- * Make the API request
- * 
- * @param {string} username 
- * @param {string} sessionId 
- * @returns 
- */
-async function callApi(username, sessionId) {
-    // Add the path
-    const path = `/mission-manager/users/${username}/mastery-progress/programs`;
-
-    // Request the data
-    let json = await getJson(baseUrl + path, [], 
-        {
-            username: username,
-            sessionId: sessionId
-        });
-
-    return json;
-}
+const baseUrl = apiBaseUrl;
 
 /**
  * Get the data from the API and process the results
  * 
  * @param  {string} username
  * @param  {string} sessionId
+ * @param  {?string} custom A custom username to get data for instead
+ * @param  {?string} pathname The current pathname
  * @return {Promise} An array containing the topics and stages
  */
-async function getData(username, sessionId) {
-    let rawData = await callApi(username, sessionId);
+async function getData(username, sessionId, custom = null, pathname = null) {
+    custom = custom || username;
+
+    let rawData = await (async function () {
+        const path = `/mission-manager/users/${custom}/mastery-progress/programs`;
+
+        let headers = {
+            username: username,
+            sessionId: sessionId,
+        };
+
+        // Only add this header if the requested data is for a different user
+        if (custom !== username) {
+            headers['assertImpersonationAuthority'] = pathname;
+        }
+
+        // Request the data
+        return getJson(baseUrl + path, [], headers);
+    })();
     
     // Re-order everything by the sequence
     const orderKey = 'masteryProgramTopicSequence';
 
-    rawData.rows.sort(function(a, b) {
+    rawData.sort(function(a, b) {
         if (a[orderKey] > b[orderKey]) {
             return -1;
         } else if (a[orderKey] < b[orderKey]) {
@@ -47,7 +44,8 @@ async function getData(username, sessionId) {
             return 0;
         }
     });
-    
+
+    // Build the data
     let data = [];
     
     const stages = ['Inevident', 'Emerging', 'Developing', 'Proficient', 'Exemplary'];
@@ -57,15 +55,18 @@ async function getData(username, sessionId) {
 
     // Keep track of the current color
     let currentColor = '';
-    
-    for (let i = 0; i < rawData.rows.length; i++) {
+
+    // Iterate over all of the returned rows
+    for (let i = 0; i < rawData.length; i++) {
         // Get the row
-        let row = rawData.rows[i];
+        let row = rawData[i];
         
         // Extract the necessary info
         const points = row['pointsEarned'];
         let dataRow = {};
-        
+
+        // Simplify the object keys
+        // Also remove unnecessary data to reduce memory usage
         dataRow['topic'] = row['masteryProgramTopicName'];
         dataRow['topic_id'] = row['masteryProgramTopicId'];
         dataRow['program_id'] = row['masteryProgramId'];
@@ -91,8 +92,8 @@ async function getData(username, sessionId) {
             if (j > 0 && dataRow['data'][j - 1]['pct'] < 1.0) {
                 pct = 0.0;
             }
-            
-            let formattedPct = (pct > 0) ? Math.round(pct * 100) + '%' : '';
+
+            //let formattedPct = (pct > 0) ? Math.round(pct * 100) + '%' : '';
             
             dataRow['data'].push({
                 date: (points >= minPoints) ? 'Passed' : '',
@@ -101,11 +102,11 @@ async function getData(username, sessionId) {
         }
 
         // If the second element is complete, mark the first one as such
-        if (dataRow['data'][1].date == 'Passed') {
+        if (dataRow['data'][1].date === 'Passed' || dataRow['data'][1].pct > 0.0) {
             dataRow['data'][0].date = 'Passed';
-            dataRow['data'][0].pct = '100%';
+            dataRow['data'][0].pct = 1.0;
         }
-        
+
         data.push(dataRow);
     }
 
@@ -120,5 +121,4 @@ export default getData;
 export {
     getData,
     baseUrl,
-    stg
 }

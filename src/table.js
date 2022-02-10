@@ -18,7 +18,12 @@ class Table {
     */
     addRow(cells, attrs = {}) {
         // Figure out tbody
-        const $tbody = this._$table.find('tbody');
+        let $tbody = this._$table.find('tbody');
+
+        // If there's no body, inject one
+        if ($tbody.length === 0) {
+            $tbody = this._$table.append(`<tbody></tbody>`);
+        }
         
         // Create an empty row
         let $row = $(`<tr></tr>`);

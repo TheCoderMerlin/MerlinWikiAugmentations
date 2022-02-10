@@ -54,6 +54,19 @@ async function handleTopicPress(event) {
     // Get the target as a jQuery object
     let $target = $(event.target);
 
+    // If the list already exists, close it or open instead of calling the API again
+    let $list = $target.siblings('div:has(ul)');
+
+    if ($list.length > 0) {
+        if ($list.is(':visible')) {
+            $list.slideUp();
+        } else {
+            $list.slideDown();
+        }
+
+        return;
+    }
+
     // Extract the topic and program id
     const topicId = $target.data('topic-id');
     const programId = $target.data('program-id');
@@ -80,7 +93,7 @@ async function handleTopicPress(event) {
     });
 
     // Create an unordered list
-    let $ul = $('<ul style="display: none;"></ul>');
+    $list = $('<ul style="display: none;"></ul>');
 
     // Iterate over the missions rows
     for (let i = 0; i < missions.length; i++) {
@@ -92,14 +105,14 @@ async function handleTopicPress(event) {
         // Set the href
         setMissionHref($li, `M${mission['sequence']}-${mission['suffix']}`);
 
-        $ul.append($li);
+        $list.append($li);
     }
 
     // Append after the name
-    $ul = $ul.wrap('<div></div>').parent();
-    $ul.prepend($target.wrap('<div></div>').parent().html());
-    $target.replaceWith($ul);
-    $ul.find('ul').slideDown();
+    $list = $list.wrap('<div></div>').parent();
+    //$list.prepend($target.wrap('<div></div>').parent().html());
+    $target.parent().append($list);
+    $list.find('ul').slideDown();
 }
 
 /**

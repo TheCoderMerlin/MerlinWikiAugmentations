@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Tree View</title>
+</head>
+<body class="bg-dark">
+    <div class="container">
+        <div class="row min-vh-100">
+            <div class="col-2 flex flex-column bg-light">
+                <div id="wrapper"></div>
+            </div>
+            <div class="col">
+                <h1 class="text-light">Something really important goes here</h1>
+            </div>
+        </div>
+    </div>
+    <script src="dist/augmentations.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            treeView('#wrapper', {"rows":[{"pathname":"2022-ahs","id":36,"children":{"rows":[{"parentId":36,"id":37,"children":{"rows":[{"name":"cs-i","parentId":37,"id":40,"children":{"rows":[{"parentId":40,"pathname":"2022-ahs/student/cs-i/dby","id":43,"children":{"rows":[{"parentId":43,"id":57,"children":{"rows":[]},"name":"period-4","pathname":"2022-ahs/student/cs-i/dby/period-4"},{"parentId":43,"id":63,"children":{"rows":[]},"name":"period-8","pathname":"2022-ahs/student/cs-i/dby/period-8"}]},"name":"dby"},{"parentId":40,"pathname":"2022-ahs/student/cs-i/hhj","id":46,"children":{"rows":[{"name":"period-1","id":50,"parentId":46,"children":{"rows":[]},"pathname":"2022-ahs/student/cs-i/hhj/period-1"},{"name":"period-2","id":53,"parentId":46,"children":{"rows":[]},"pathname":"2022-ahs/student/cs-i/hhj/period-2"},{"name":"period-5","id":59,"parentId":46,"children":{"rows":[]},"pathname":"2022-ahs/student/cs-i/hhj/period-5"},{"name":"period-8","id":64,"parentId":46,"children":{"rows":[]},"pathname":"2022-ahs/student/cs-i/hhj/period-8"}]},"name":"hhj"},{"parentId":40,"pathname":"2022-ahs/student/cs-i/sem","id":48,"children":{"rows":[{"name":"period-0","pathname":"2022-ahs/student/cs-i/sem/period-0","children":{"rows":[]},"id":49,"parentId":48},{"name":"period-3","pathname":"2022-ahs/student/cs-i/sem/period-3","children":{"rows":[]},"id":55,"parentId":48},{"name":"period-6","pathname":"2022-ahs/student/cs-i/sem/period-6","children":{"rows":[]},"id":61,"parentId":48}]},"name":"sem"}]},"pathname":"2022-ahs/student/cs-i"},{"id":41,"children":{"rows":[{"children":{"rows":[{"parentId":44,"name":"period-1","children":{"rows":[]},"pathname":"2022-ahs/student/cs-ii/dby/period-1","id":51},{"parentId":44,"name":"period-2","children":{"rows":[]},"pathname":"2022-ahs/student/cs-ii/dby/period-2","id":54},{"parentId":44,"name":"period-3","children":{"rows":[]},"pathname":"2022-ahs/student/cs-ii/dby/period-3","id":56}]},"pathname":"2022-ahs/student/cs-ii/dby","parentId":41,"id":44,"name":"dby"},{"children":{"rows":[{"parentId":47,"id":58,"children":{"rows":[]},"name":"period-4","pathname":"2022-ahs/student/cs-ii/hhj/period-4"}]},"pathname":"2022-ahs/student/cs-ii/hhj","parentId":41,"id":47,"name":"hhj"}]},"name":"cs-ii","pathname":"2022-ahs/student/cs-ii","parentId":37},{"id":42,"children":{"rows":[{"id":45,"children":{"rows":[{"parentId":45,"name":"period-1","children":{"rows":[]},"pathname":"2022-ahs/student/cs-iii/dby/period-1","id":52},{"parentId":45,"name":"period-5","children":{"rows":[]},"pathname":"2022-ahs/student/cs-iii/dby/period-5","id":60},{"parentId":45,"name":"period-7","children":{"rows":[]},"pathname":"2022-ahs/student/cs-iii/dby/period-7","id":62}]},"name":"dby","pathname":"2022-ahs/student/cs-iii/dby","parentId":42}]},"name":"cs-iii","pathname":"2022-ahs/student/cs-iii","parentId":37},{"id":66,"children":{"rows":[{"children":{"rows":[{"pathname":"2022-ahs/student/fcs/crb/period-1","parentId":67,"id":68,"name":"period-1","children":{"rows":[]}},{"pathname":"2022-ahs/student/fcs/crb/period-2","parentId":67,"id":69,"name":"period-2","children":{"rows":[]}},{"pathname":"2022-ahs/student/fcs/crb/period-3","parentId":67,"id":70,"name":"period-3","children":{"rows":[]}},{"pathname":"2022-ahs/student/fcs/crb/period-6","parentId":67,"id":71,"name":"period-6","children":{"rows":[]}},{"pathname":"2022-ahs/student/fcs/crb/period-8","parentId":67,"id":72,"name":"period-8","children":{"rows":[]}}]},"id":67,"pathname":"2022-ahs/student/fcs/crb","name":"crb","parentId":66}]},"name":"fcs","pathname":"2022-ahs/student/fcs","parentId":37}]},"pathname":"2022-ahs/student","name":"student"},{"name":"assistant","children":{"rows":[]},"parentId":36,"pathname":"2022-ahs/assistant","id":38},{"name":"invigilator","children":{"rows":[]},"parentId":36,"pathname":"2022-ahs/invigilator","id":39},{"name":"oc3","children":{"rows":[]},"parentId":36,"pathname":"2022-ahs/oc3","id":65},{"name":"ap-prep","children":{"rows":[]},"parentId":36,"pathname":"2022-ahs/ap-prep","id":73}]},"name":"2022-ahs"}]}, function (e) {
+                let $target = $(e.target);
+
+                console.log($target.data('key'), $target.text());
+            });
+        });
+    </script>
+</body>
+</html>

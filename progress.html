@@ -6,7 +6,26 @@
 </head>
 <body>
     <div class="container">
-        <table class="table table-bordered" id="mastery-progress-table">
+        <div class="row" id="users-treeview-wrapper">
+            <div id="users-treeview" class="col">
+            </div>
+
+            <div class="col d-flex justify-content-center flex-column">
+                <select id="students-dropdown" class="" style="display: none;">
+                    <option disabled selected>Make a selection</option>
+                </select>
+
+                <div id="treeview-spinner" class="merlin-spinner spinner-border my-4 mx-auto" role="status" style="display: none;">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="mastery-loader" class="merlin-spinner spinner-border my-4 mx-auto" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+
+        <table class="table table-bordered" id="mastery-progress-table" style="display: none;">
             <thead>
                 <tr>
                     <th scope="row">Level</th>
@@ -23,9 +42,6 @@
             </tbody>
         </table>
     </div>
-    <script src="dist/augmentations.js"></script>
-    <script>
-        merlinProficiencyProgress('usernameTest', 'sessionIdTest');
-    </script> 
+    <script src="dist/testing.js"></script>
 </body>
 </html>

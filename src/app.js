@@ -15,7 +15,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import merlinProficiencyProgress from "./proficiencyProgress/app";
 import sashesEarned from './sashesEarned/app';
+import treeView from './treeview/app';
 
 // Exports
 window.merlinProficiencyProgress = merlinProficiencyProgress;
 window.sashesEarned = sashesEarned;
+window.treeView = treeView;

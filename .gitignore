@@ -5,3 +5,6 @@ mix-manifest.json
 src/dummy.js
 .vscode
 .idea
+dist/testing.js
+dist/testing.js.LICENSE.txt
+src/testing.js
