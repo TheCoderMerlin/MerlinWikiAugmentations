@@ -6,6 +6,20 @@ require('@selectize/selectize/dist/js/standalone/selectize.min');
 require('@selectize/selectize/dist/css/selectize.bootstrap4.css');
 
 /**
+ * Disables a button
+ *
+ * @param  {boolean} disable
+ * @return {jQuery}
+ */
+$.fn.disable = function (disable = true) {
+    if (disable) {
+        $(this).attr("disabled", "disabled");
+    } else {
+        $(this).removeAttr("disabled");
+    }
+};
+
+/**
  * Simple error handler
  *
  * @param  {string|object} error
@@ -19,6 +33,18 @@ function error(error) {
     throw error;
 }
 
+/**
+ * @property {string} username The current username
+ * @property {string} sessionId The current sessionId
+ * @property {jQuery} $dropdown The student selection dropdown
+ * @property {jQuery} $spinner The general spinner
+ * @property {jQuery} $tableSpinner The table spinner
+ * @property {jQuery} $table The table
+ * @property {?string} pathname The active pathname
+ * @property {?jQuery} $user The currently selected user DOM element
+ * @property {?Selectize} selectize The selectize element
+ * @property {?jQuery} $btns The button wrapper
+ */
 class UsersTreeview extends Treeview {
     /**
      * Display the treeview
@@ -28,6 +54,23 @@ class UsersTreeview extends Treeview {
      * @return {Promise<Object>}
      */
     static async build(username, sessionId) {
+        // Register button callbacks
+        this.$btns = $(".dropdown-control-buttons");
+
+        this.$btns.find("#prev-button").click(() => this.prev.apply(this));
+        this.$btns.find("#next-button").click(() => this.next.apply(this));
+
+        this.$btns.hide();
+
+        // Set context
+        this.username = username;
+        this.sessionId = sessionId;
+
+        // Minimize DOM lookups
+        this.$spinner = $("#treeview-spinner");
+        this.$table = $("table#mastery-progress-table");
+        this.$dropdown = $("#students-dropdown");
+
         // Initialize
         let data = {};
 
@@ -53,107 +96,115 @@ class UsersTreeview extends Treeview {
             }
         };
 
-        // Minimize DOM lookups
-        let $dropdown = $("#students-dropdown");
-        const $spinner = $("#treeview-spinner");
-        const $table = $("table#mastery-progress-table");
-        const $thead = $table.find("thead");
-
         // Hide the table and dropdown by default
-        $table.hide();
+        this.$table.hide();
 
         // Hide the spinner
-        const $tableSpinner = $("#mastery-loader");
-        $tableSpinner.hide();
+        this.$tableSpinner = $("#mastery-loader");
+        this.$tableSpinner.hide();
 
-        let pathname = null;
+        // Set the default pathname
+        this.pathname = null;
 
-        UsersTreeview.render($("#users-treeview"), data, async function (event) {
-            // Get the target from the event
-            const $target = $(event.target);
+        this.render($("#users-treeview"), data, (event) => this.callback.apply(this, [event]));
 
-            // Extract the row data from the data-row attribute
-            const row = $target.data("row");
+        // Add an event handler for the dropdown
+        this.$dropdown.on("change", () => this.dropdownChange.apply(this));
+    }
 
-            // If row is undefined, do nothing
-            if (!row) {
-                console.log("No data, so doing nothing.");
+    /**
+     * Treeview callback
+     *
+     * @param  {Event} event
+     * @return {Promise<void>}
+     */
+    static async callback(event) {
+        // Get the target from the event
+        const $target = $(event.target);
 
-                return;
-            }
+        // Extract the row data from the data-row attribute
+        const row = $target.data("row");
 
-            // Detect the fake "AHS" root element
-            if (!row.parentId) {
-                console.log("Fake branch detected.");
+        // If row is undefined, do nothing
+        if (!row) {
+            console.log("No data, so doing nothing.");
 
-                return;
-            }
+            return;
+        }
 
-            // Show the loader
-            $dropdown.hide();
-            $spinner.show();
-            $dropdown.empty();
-            //$table.find("tbody").empty();
-            $table.hide();
+        // Detect the fake "AHS" root element
+        if (!row.parentId) {
+            console.log("Fake branch detected.");
 
-            let $default = $(`<option disabled selected value="">Select a student</option>`);
-            $dropdown.append($default);
+            return;
+        }
 
-            pathname = row.pathname;
+        // Show the loader
+        this.$dropdown.hide();
+        this.$spinner.show();
+        this.$dropdown.empty();
+        //$table.find("tbody").empty();
+        this.$table.hide();
+        this.$btns.hide();
 
-            // Ignore if the active pathname is already set
-            if ($dropdown.data("activePathname") == pathname) {
-                return;
-            }
+        let $default = $(`<option disabled selected value="">Select a student</option>`);
+        this.$dropdown.append($default);
 
-            // Mark the active path in the dropdown
-            $dropdown.data("activePathname", pathname);
+        this.pathname = row.pathname;
 
-            let rows = [];
+        // Ignore if the active pathname is already set
+        if (this.$dropdown.data("activePathname") == this.pathname) {
+            return;
+        }
 
-            try {
-                rows = await Http.get(apiBaseUrl + `/groups/underAuthority/${username}/${row.pathname}/users`, {}, {
-                    username: username,
-                    sessionId: sessionId
-                });
-            } catch (e) {
-                error(e);
-            }
+        // Mark the active path in the dropdown
+        this.$dropdown.data("activePathname", this.pathname);
 
-            // Update the count if not already
-            if (!$target.data("count")) {
-                $target.data("count", rows.length);
+        let rows = [];
 
-                $target.text($target.text() + ` (${$target.data("count")})`);
-            }
+        try {
+            rows = await Http.get(apiBaseUrl + `/groups/underAuthority/${this.username}/${row.pathname}/users`, {}, {
+                username: this.username,
+                sessionId: this.sessionId
+            });
+        } catch (e) {
+            error(e);
+        }
 
-            // Sort by last name
-            rows.sort((a, b) => (a.lastName > b.lastName) ? 1 : -1);
+        // Update the count if not already
+        if (!$target.data("count")) {
+            $target.data("count", rows.length);
 
-            let options = [];
+            $target.text($target.text() + ` (${$target.data("count")})`);
+        }
 
-            for (let i = 0; i < rows.length; i++) {
-                let user = rows[i];
+        // Sort by last name
+        rows.sort((a, b) => (a.lastName > b.lastName) ? 1 : -1);
 
-                options.push({
-                    value: user.userName,
-                    label: `${user.lastName}, ${user.firstName} (${user.userName})`,
-                    user: user,
-                });
-            }
+        let options = [];
 
-            // Re-initialize
-            const $col = $("#treeview-spinner").parent(".col.d-flex");
+        for (let i = 0; i < rows.length; i++) {
+            let user = rows[i];
 
-            $dropdown = $dropdown.clone(true, true);
+            options.push({
+                value: user.userName,
+                label: `${user.lastName}, ${user.firstName} (${user.userName})`,
+                user: user,
+            });
+        }
 
-            $col.find(".selectize-control, .selectized").remove();
+        // Re-initialize
+        const $col = $("#treeview-spinner").parent(".col.d-flex");
 
-            $col.append($dropdown);
+        //this.$dropdown = this.$dropdown.clone(true, true);
 
-            // Re-init
-            $dropdown.selectize({
-                options: options,
+        //$col.find(".selectize-control, .selectized").remove();
+
+        //$col.prepend(this.$dropdown);
+
+        // Re-init
+        if (!this.selectize) {
+            this.selectize = this.$dropdown.selectize({
                 render: {
                     /**
                      * Custom render function
@@ -168,37 +219,64 @@ class UsersTreeview extends Treeview {
                 },
                 valueField: "value",
                 labelField: "label",
-                searchField: "label"
-            });
+                searchField: "label",
+            })[0].selectize;
+        }
 
-            $spinner.hide();
-            //$dropdown.show();
-        });
+        console.log(this.selectize);
 
-        // Add an event handler for the dropdown
-        $dropdown.on("change", async function () {
-            // Hide the table again
-            $table.hide();
+        // Update the available options
+        this.selectize.clearOptions(true);
+        this.selectize.addOption(options);
+        this.selectize.refreshOptions(false);
 
-            // Remove the first header row if more than one exists
-            if ($thead.find("tr").length > 1) {
-                $thead.find("tr").first().remove();
-            }
+        // Reset $user
+        this.$user = null;
 
-            const selectedUsername = $dropdown.val();
+        this.$spinner.hide();
+        this.$btns.css("display", "flex");
+        //$dropdown.show();
+    }
 
-            // Show the user's name on top of the table
-            const user = $(`#students-dropdown ~ .selectize-control:first .selectize-dropdown-content [data-value="${selectedUsername}"]`).data("user");
+    /**
+     * Handle a dropdown update
+     *
+     * @return {Promise<void>}
+     */
+    static async dropdownChange() {
+        this.disable(true);
 
-            // Wait for the table to generate
-            try {
-                await window.merlinProficiencyProgress(username, sessionId, selectedUsername, pathname);
-            } catch (e) {
-                error(e);
-            }
+        // Find $thead
+        let $thead = this.$table.find("thead");
 
-            // Prepend the student's name to the table header
-            $table.find("thead").prepend(`
+        // Hide the table again
+        let height = this.$table.height();
+        this.$table.hide();
+        this.$tableSpinner.height(height).css("display", "flex");
+
+        // Remove the first header row if more than one exists
+        if ($thead.find("tr").length > 1) {
+            $thead.find("tr:not(:last-child)").remove();
+        }
+
+        const selectedUsername = this.$dropdown.val();
+
+        // Show the user's name on top of the table
+        this.$user = this.selectize.getOption(selectedUsername);
+        const user = this.$user.data("user");
+
+        // Get the previous user
+        console.log(this.$user.prev(), this.$user.next());
+
+        // Wait for the table to generate
+        try {
+            await window.merlinProficiencyProgress(this.username, this.sessionId, selectedUsername, this.pathname);
+        } catch (e) {
+            error(e);
+        }
+
+        // Prepend the student's name to the table header
+        this.$table.find("thead").prepend(`
 <tr>
     <th colspan="7">
         <h2 class="text-center">${user.lastName}, ${user.firstName}</h2>
@@ -206,9 +284,74 @@ class UsersTreeview extends Treeview {
 </tr>
 `);
 
-            // Hide the spinner and show the table
-            $table.show();
-        });
+        // Hide the spinner and show the table
+        this.$tableSpinner.hide();
+        this.$table.show();
+        this.disable(false);
+    }
+
+    /**
+     * Update the current student
+     *
+     * @param  {?jQuery} $newUser
+     */
+    static updateUser($newUser) {
+        // Guard
+        if (!$newUser) {
+            console.log("Undefined user!");
+            return;
+        }
+
+        console.log($newUser);
+
+        //this.selectize.setActiveOption($newUser, false, false);
+
+        $newUser.trigger("mousedown");
+
+        // Update the currently selected user
+        //this.$user = $newUser;
+    }
+
+    /**
+     * Select the previous student
+     *
+     * @return {Promise<void>}
+     */
+    static prev() {
+        this.updateUser(this.$user.prev());
+    }
+
+    /**
+     * Select the next student
+     *
+     *
+     * @return {Promise<void>}
+     */
+    static next() {
+        this.updateUser(this.$user.next());
+    }
+
+    /**
+     * Disable the buttons
+     *
+     * @param  {boolean} disable
+     * @return {undefined}
+     */
+    static disable(disable = true) {
+        if (disable) {
+            this.$btns.find("button").disable(disable);
+        } else {
+            // Keep disabled if there's no element to change to
+            if (!this.$user.next().length && !this.$user.prev().length) {
+                // Keep both disabled
+            } else if (!this.$user.next().length) {
+                this.$btns.find("#prev-button").disable(false);
+            } else if (!this.$user.prev().length) {
+                this.$btns.find("#next-button").disable(false);
+            } else {
+                this.$btns.find("button").disable(false);
+            }
+        }
     }
 }
 

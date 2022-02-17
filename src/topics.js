@@ -75,7 +75,7 @@ async function handleTopicPress(event) {
     let path = `/mission-manager/mastery-programs/${programId}/topics/${topicId}/missions`;
 
     // Fetch the missions
-    let missions = (await getJson(apiBaseUrl + path))['rows'];
+    let missions = (await getJson(apiBaseUrl + path));
 
     // Sort by name
     missions.sort(function (left, right) {

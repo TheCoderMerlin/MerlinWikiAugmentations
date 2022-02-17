@@ -57,8 +57,7 @@ class Treeview {
             transform: rotate(0deg);
         }
 
-        .merlin-treeview-list .merlin-treeview
-        -leaf {
+        .merlin-treeview-list .merlin-treeview-leaf {
             color: blue;
         }
         

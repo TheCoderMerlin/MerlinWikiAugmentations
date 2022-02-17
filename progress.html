@@ -15,14 +15,21 @@
                     <option disabled selected>Make a selection</option>
                 </select>
 
+                <div class="dropdown-control-buttons justify-content-between" style="display: none;">
+                    <button class="btn btn-primary d-inline" id="prev-button">Previous</button>
+                    <button class="btn btn-primary d-inline" id="next-button">Next</button>
+                </div>
+
                 <div id="treeview-spinner" class="merlin-spinner spinner-border my-4 mx-auto" role="status" style="display: none;">
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
         </div>
 
-        <div id="mastery-loader" class="merlin-spinner spinner-border my-4 mx-auto" role="status">
-            <span class="sr-only">Loading...</span>
+        <div id="mastery-loader" class="justify-content-center align-items-start" style="display: flex;">
+            <div class="merlin-spinner spinner-border my-4 mx-auto" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </div>
 
         <table class="table table-bordered" id="mastery-progress-table" style="display: none;">

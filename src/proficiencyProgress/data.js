@@ -68,7 +68,7 @@ async function getData(username, sessionId, custom = null, pathname = null) {
         // Simplify the object keys
         // Also remove unnecessary data to reduce memory usage
         dataRow['topic'] = row['masteryProgramTopicName'];
-        dataRow['topic_id'] = row['masteryProgramTopicId'];
+        dataRow['topic_id'] = row['id'];
         dataRow['program_id'] = row['masteryProgramId'];
         dataRow['level_name'] = row['masteryProgramLevelName'];
         dataRow['level_group'] = dataRow['level_name'].split(' ')[0];

@@ -44,8 +44,6 @@ async function merlinProficiencyProgress(username, sessionId, custom= null, path
 
     const [levels, data] = await getData(...arguments);
 
-    console.log(data);
-
     let currentLevel = undefined;
     let newLevel = undefined;
 
@@ -107,8 +105,6 @@ async function merlinProficiencyProgress(username, sessionId, custom= null, path
             if (stage.date && isNaN(pct)) {
                 pct = 1.0;
             }
-
-            console.log(stage);
 
             // Background color for the cell
             let backgroundColor = `rgb(0, ${greenColor}, 0)`;
