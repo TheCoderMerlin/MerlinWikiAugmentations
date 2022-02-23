@@ -11,7 +11,6 @@ module.exports = {
             }
         ],
     },
-    watch: process.env.ENV === "development",
     mode: process.env.ENV,
     entry: {
         augmentations: "./src/app.js",
@@ -23,7 +22,7 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            "process.env": process.env.env === "development" ? JSON.stringify(process.env) : {}
+            "process.env": process.env.ENV === "development" ? JSON.stringify(process.env) : {}
         }),
     ]
 };

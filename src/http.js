@@ -15,7 +15,7 @@ class Http {
      * @param  {string} url
      * @param  {object} data
      * @param  {object} headers
-     * @return {$.ajax}
+     * @return {Promise<object>}
      */
     static _ajax(method, url, data = {}, headers = {}) {
         return $.ajax({
@@ -35,7 +35,7 @@ class Http {
      * @param  {object} headers Any headers to add
      * @return {Promise<object>}
      */
-    static get(url, params, headers) {
+    static get(url, params = {} , headers= {}) {
         return Http._ajax('GET', url, params, headers);
     }
 }

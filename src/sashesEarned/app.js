@@ -3,7 +3,15 @@ import Table from '../table';
 import $ from 'jquery';
 import addTopicHandlers from '../topics';
 import {reverseSort} from '../sorting';
-import moment from 'moment';
+//import moment from 'moment';
+
+// DayJS
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(advancedFormat);
+dayjs.extend(utc);
 
 /**
  * Main entrypoint
@@ -20,11 +28,11 @@ async function sashesEarned(username, sessionId)
         sessionId: sessionId
     });
 
-    let rows = data['rows'];
+    let rows = data;
 
     // Sort the array in reverse order
     rows.sort(function(a, b) {
-        return reverseSort('masteryProgramTopicSequence', a, b);
+        return reverseSort("masteryProgramTopicSequence", a, b);
     });
 
     // Set up the table class
@@ -51,7 +59,7 @@ async function sashesEarned(username, sessionId)
             data: `<div class="d-flex justify-content-center align-items-center badge-image-wrapper" style="opacity: 0;">
                 <a href="${row['externalOpenBadgeId']}" target="_blank" title="${row['masteryProgramTopicLevelName']}">
                     <img style="object-fit: contain; height: 200px; width: 200px;" alt="${row['masteryProgramTopicLevelName']} badge" src="${wikiBaseUrl}${row['sashImageUri']}">
-                    <p class="text-center small">${moment(row['awardTimestamp']).format('MMMM Do YYYY, h:mm a')}</p>
+                    <p class="text-center small">${dayjs.utc(row['awardTimestamp']).format('MMMM Do YYYY, h:mm a')}</p>
                 </a>
             </div>`
         });

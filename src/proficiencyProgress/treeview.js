@@ -324,10 +324,17 @@ class UsersTreeview extends Treeview {
     /**
      * Select the next student
      *
-     *
-     * @return {Promise<void>}
+     * @return {undefined}
      */
     static next() {
+        // If $user is not defined, default to the first user
+        if (!this.$user) {
+            console.log("Defaulting to first user.");
+            this.updateUser(this.selectize.$dropdown_content.find(".option").first());
+
+            return;
+        }
+
         this.updateUser(this.$user.next());
     }
 

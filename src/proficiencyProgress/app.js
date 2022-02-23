@@ -54,7 +54,7 @@ async function merlinProficiencyProgress(username, sessionId, custom= null, path
         newLevel = topic['level_group'];
 
         if (newLevel != currentLevel) {
-            // Add a level row
+            // Add a header row if the group has changed
             table.addRow([
                 {
                     header: true,
@@ -74,9 +74,9 @@ async function merlinProficiencyProgress(username, sessionId, custom= null, path
 
         // First, add a colored cell as per the level
         cells.push({
-            data: '',
+            data: topic['level_number'],
             attributes: {
-                style: `background-color: ${newLevel.toLowerCase()}; border: none;`,
+                style: `background-color: ${newLevel.toLowerCase()}; border: none; text-align: center; font-weight: bold;`,
             }
         });
 
@@ -148,7 +148,7 @@ async function merlinProficiencyProgress(username, sessionId, custom= null, path
     }
 
     // Add the callbacks for each topic
-    addTopicHandlers($table, 'topic-name');
+    addTopicHandlers($table, '.topic-name');
 }
 
 export default merlinProficiencyProgress;

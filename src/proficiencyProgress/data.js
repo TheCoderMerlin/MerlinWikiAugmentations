@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import {getJson, apiBaseUrl} from '../http';
+import Arr from '../arr';
 
 const baseUrl = apiBaseUrl;
 
@@ -72,6 +73,7 @@ async function getData(username, sessionId, custom = null, pathname = null) {
         dataRow['program_id'] = row['masteryProgramId'];
         dataRow['level_name'] = row['masteryProgramLevelName'];
         dataRow['level_group'] = dataRow['level_name'].split(' ')[0];
+        dataRow['level_number'] = Arr.last(dataRow['level_name'].split(' '));
         dataRow['data'] = [];
 
         // Add to the levels array
